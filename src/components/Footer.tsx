@@ -26,7 +26,7 @@ const Footer = () => {
         </div>
         <p className="footer-copy">© {new Date().getFullYear()} VESTRIS. Todos os direitos reservados.</p>
         <button className="footer-admin-btn" onClick={() => setShowAdmin(true)}>
-          Ver lista
+          Área administrativa
         </button>
       </footer>
 

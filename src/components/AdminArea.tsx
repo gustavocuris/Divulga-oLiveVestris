@@ -53,6 +53,20 @@ const normalizeSource = (value: string) => value
   .replace(/[^a-z0-9]+/g, '-')
   .replace(/^-+|-+$/g, '')
 
+const phoneDigits = (value: string) => {
+  const digits = value.replace(/\D/g, '')
+  return digits.length >= 12 && digits.startsWith('55') ? digits.slice(2) : digits
+}
+
+const formatPhone = (value: string) => {
+  const digits = phoneDigits(value)
+  if (digits.length === 11) return `(${digits.slice(0, 2)})${digits.slice(2, 7)}-${digits.slice(7)}`
+  if (digits.length === 10) return `(${digits.slice(0, 2)})${digits.slice(2, 6)}-${digits.slice(6)}`
+  return value
+}
+
+const whatsappUrl = (value: string) => `https://wa.me/55${phoneDigits(value)}`
+
 const startOfDay = (date: Date) => {
   const result = new Date(date)
   result.setHours(0, 0, 0, 0)
@@ -348,6 +362,8 @@ const AdminArea = ({ onClose }: { onClose: () => void }) => {
         {!authenticated ? (
           <div className="admin-login-shell">
             <form onSubmit={handleAuth} className="password-form">
+              <div className="admin-login-brand"><svg viewBox="0 0 520 112" role="img" aria-label="Vestris"><defs><linearGradient id="admin-vestris-green" x1="0" x2="1"><stop offset="0%" stopColor="#0b3d1d" /><stop offset="35%" stopColor="#145426" /><stop offset="70%" stopColor="#277d30" /><stop offset="100%" stopColor="#4b9c35" /></linearGradient></defs><text x="260" y="90" textAnchor="middle" fill="url(#admin-vestris-green)">VESTRIS</text></svg></div>
+              <p className="admin-login-caption">Acesso ao painel da Live Vestris</p>
               <label htmlFor="admin-password">Senha de acesso</label>
               <input
                 id="admin-password"
@@ -357,7 +373,7 @@ const AdminArea = ({ onClose }: { onClose: () => void }) => {
                   setPassword(event.target.value)
                   setPasswordError('')
                 }}
-                placeholder="••••••••••"
+                placeholder="Digite sua senha"
                 autoFocus
                 autoComplete="current-password"
               />
@@ -469,13 +485,13 @@ const AdminArea = ({ onClose }: { onClose: () => void }) => {
                 ) : (
                   <ScrollableTable>
                     <table className="admin-table">
-                      <thead><tr><th>#</th><th>Nome</th><th>WhatsApp</th><th>E-mail</th><th>Tipo</th><th>Clínica</th><th>Cidade</th><th>Interesse</th><th>Origem</th><th>Cadastro</th><th></th></tr></thead>
+                      <thead><tr><th>#</th><th>Nome</th><th>Telefone</th><th>Gmail</th><th>Origem</th><th>Cadastro</th><th>A��es</th></tr></thead>
                       <tbody>
                         {displayedRegistrations.map((registration, index) => (
                           <tr key={registration.id}>
-                            <td>{index + 1}</td><td>{registration.name}</td><td>{registration.whatsapp}</td><td>{registration.email}</td><td>{registration.professionalType}</td><td>{registration.clinicName || '—'}</td><td>{registration.city || '—'}</td><td>{registration.interest || '—'}</td>
+                            <td>{index + 1}</td><td>{registration.name}</td><td>{formatPhone(registration.whatsapp)}</td><td>{registration.email}</td>
                             <td>{partners.find((item) => item.referralSource === registration.referralSource)?.displayName || 'VESTRIS'}</td>
-                            <td>{registration.createdAt}</td><td><button className="btn-delete-row" onClick={() => handleDelete(registration.id)} title="Excluir">×</button></td>
+                            <td>{registration.createdAt}</td><td className="registration-actions"><a className="btn-whatsapp" href={whatsappUrl(registration.whatsapp)} target="_blank" rel="noopener noreferrer">WhatsApp</a><button className="btn-delete-row" onClick={() => handleDelete(registration.id)} title="Excluir">�</button></td>
                           </tr>
                         ))}
                       </tbody>
@@ -491,8 +507,8 @@ const AdminArea = ({ onClose }: { onClose: () => void }) => {
                 {registrations.length === 0 ? <div className="empty-state">Nenhum cadastro pelo seu link ainda.</div> : (
                   <ScrollableTable>
                     <table className="admin-table">
-                      <thead><tr><th>#</th><th>Nome</th><th>WhatsApp</th><th>E-mail</th><th>Tipo</th><th>Cidade</th><th>Interesse</th><th>Cadastro</th></tr></thead>
-                      <tbody>{registrations.map((registration, index) => <tr key={registration.id}><td>{index + 1}</td><td>{registration.name}</td><td>{registration.whatsapp}</td><td>{registration.email}</td><td>{registration.professionalType}</td><td>{registration.city || '—'}</td><td>{registration.interest || '—'}</td><td>{registration.createdAt}</td></tr>)}</tbody>
+                      <thead><tr><th>#</th><th>Nome</th><th>Telefone</th><th>Gmail</th><th>Cadastro</th><th>A��es</th></tr></thead>
+                      <tbody>{registrations.map((registration, index) => <tr key={registration.id}><td>{index + 1}</td><td>{registration.name}</td><td>{formatPhone(registration.whatsapp)}</td><td>{registration.email}</td><td>{registration.createdAt}</td><td><a className="btn-whatsapp" href={whatsappUrl(registration.whatsapp)} target="_blank" rel="noopener noreferrer">WhatsApp</a></td></tr>)}</tbody>
                     </table>
                   </ScrollableTable>
                 )}

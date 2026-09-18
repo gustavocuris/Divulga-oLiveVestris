@@ -1,74 +1,20 @@
-import { useEffect, useRef } from 'react'
-
-const STEPS = [
-  {
-    num: '01',
-    title: 'Acesso liberado',
-    desc: 'Você recebe acesso à plataforma antes do lançamento oficial ao público.',
-  },
-  {
-    num: '02',
-    title: 'Uso na prática',
-    desc: 'Utilize o sistema no seu dia a dia clínico e explore os recursos reais.',
-  },
-  {
-    num: '03',
-    title: 'Feedback direto',
-    desc: 'Compartilhe sua experiência diretamente com a equipe de desenvolvimento.',
-  },
-  {
-    num: '04',
-    title: 'Evolução do sistema',
-    desc: 'Suas contribuições moldam as próximas versões do produto.',
-  },
+const TOPICS = [
+  { number: '01', title: 'Apresentação do sistema', text: 'Conheça a Vestris e veja como a plataforma organiza informações essenciais para a rotina clínica.' },
+  { number: '02', title: 'Dicas práticas de uso', text: 'Vamos mostrar, passo a passo, recursos que ajudam a ganhar tempo no dia a dia.' },
+  { number: '03', title: 'Tire suas dúvidas ao vivo', text: 'Envie suas perguntas e converse diretamente com o nosso time durante a transmissão.' },
 ]
 
-const WhyItMatters = () => {
-  const stepsRef = useRef<(HTMLDivElement | null)[]>([])
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const el = entry.target as HTMLElement
-            const delay = parseInt(el.dataset.delay || '0', 10)
-            setTimeout(() => el.classList.add('visible'), delay)
-            observer.unobserve(el)
-          }
-        })
-      },
-      { threshold: 0.15 }
-    )
-    stepsRef.current.forEach((el) => { if (el) observer.observe(el) })
-    return () => observer.disconnect()
-  }, [])
-
-  return (
-    <section className="how-section" id="why">
-      <p className="section-eyebrow">Como funciona</p>
-      <h2 className="section-title">O acesso antecipado <em>em quatro etapas</em></h2>
-      <p className="section-desc">
-        Você entra, utiliza o sistema antes de todos e compartilha sua experiência com a equipe.
-      </p>
-
-      <div className="how-steps">
-        <div className="how-steps-line" />
-        {STEPS.map((step, i) => (
-          <div
-            key={step.num}
-            className="how-step"
-            data-delay={String(i * 120)}
-            ref={(el) => { stepsRef.current[i] = el }}
-          >
-            <div className="how-step-num">{step.num}</div>
-            <h4>{step.title}</h4>
-            <p>{step.desc}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  )
-}
+const WhyItMatters = () => (
+  <section className="live-agenda" id="agenda">
+    <p className="live-section-kicker">Programação da live</p>
+    <h2>O que vamos conversar <em>no dia 26/09</em></h2>
+    <p className="live-section-intro">Uma apresentação pensada para deixar a Vestris mais próxima da sua prática.</p>
+    <div className="live-topic-grid">
+      {TOPICS.map((topic) => <article className="live-topic" key={topic.number}>
+        <span>{topic.number}</span><h3>{topic.title}</h3><p>{topic.text}</p>
+      </article>)}
+    </div>
+  </section>
+)
 
 export default WhyItMatters
