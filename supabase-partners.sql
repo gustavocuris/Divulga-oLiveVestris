@@ -48,7 +48,7 @@ select
   'VESTRIS',
   'admin',
   null,
-  crypt('vestris2026', gen_salt('bf'))
+  extensions.crypt('vestris2026', extensions.gen_salt('bf'))
 where not exists (
   select 1 from public.access_accounts where role = 'admin'
 );
@@ -63,7 +63,7 @@ select
   'Dra. Melanie Leite',
   'partner',
   'melanie',
-  crypt('melanie2026', gen_salt('bf'))
+  extensions.crypt('melanie2026', extensions.gen_salt('bf'))
 where not exists (
   select 1 from public.access_accounts where referral_source = 'melanie'
 );
@@ -83,7 +83,7 @@ begin
   into v_account
   from public.access_accounts
   where active = true
-    and password_hash = crypt(p_password, password_hash)
+    and password_hash = extensions.crypt(p_password, password_hash)
   limit 1;
 
   if v_account.id is null then
@@ -158,7 +158,7 @@ begin
   from public.access_accounts
   where role = 'admin'
     and active = true
-    and password_hash = crypt(p_admin_password, password_hash)
+    and password_hash = extensions.crypt(p_admin_password, password_hash)
   limit 1;
 
   if v_admin_id is null
@@ -182,7 +182,7 @@ begin
     trim(p_display_name),
     'partner',
     v_source,
-    crypt(p_partner_password, gen_salt('bf')),
+    extensions.crypt(p_partner_password, extensions.gen_salt('bf')),
     true
   )
   on conflict (referral_source) where referral_source is not null
@@ -212,7 +212,7 @@ begin
   from public.access_accounts
   where role = 'admin'
     and active = true
-    and password_hash = crypt(p_admin_password, password_hash)
+    and password_hash = extensions.crypt(p_admin_password, password_hash)
   limit 1;
 
   if v_admin_id is null then
@@ -301,5 +301,5 @@ order by role, display_name;
 
 -- Para trocar uma senha futuramente:
 -- update public.access_accounts
--- set password_hash = crypt('nova-senha', gen_salt('bf'))
+-- set password_hash = extensions.crypt('nova-senha', extensions.gen_salt('bf'))
 -- where referral_source = 'melanie';
