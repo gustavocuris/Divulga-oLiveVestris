@@ -3,6 +3,18 @@
 
 create extension if not exists pgcrypto;
 
+create table if not exists public.registrations (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  whatsapp text not null,
+  email text not null,
+  professional_type text not null,
+  clinic_name text,
+  city text,
+  interest text,
+  created_at timestamptz not null default now()
+);
+
 alter table public.registrations
 add column if not exists referral_source text;
 
